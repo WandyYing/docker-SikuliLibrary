@@ -15,7 +15,8 @@ RUN apt-get -qqy update \
     unzip \
     git
 
-RUN pip install robotframework==3.0.2 \
+RUN pip install setuptools \
+    robotframework==3.0.2 \
     robotframework-SikuliLibrary
 
 
