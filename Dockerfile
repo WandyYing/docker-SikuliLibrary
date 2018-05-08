@@ -32,7 +32,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # RUN java -jar /usr/local/lib/python2.7/dist-packages/SikuliLibrary/bin/SikuliLibrary.jar 18181
 RUN chmod +x /usr/lib/python2.7/site-packages/SikuliLibrary/lib/SikuliLibrary.jar
-RUN java -jar /usr/lib/python2.7/site-packages/SikuliLibrary/lib/SikuliLibrary.jar 18181
+RUN java -jar /usr/lib/python2.7/site-packages/SikuliLibrary/lib/SikuliLibrary.jar 18181 &
 
 
 EXPOSE 22
