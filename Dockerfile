@@ -1,22 +1,38 @@
 FROM openjdk:jre-alpine 
 
-MAINTAINER Ying Jun (https://github.com/WandyYing/docker-SikuliLibrary) 
+MAINTAINER Ying <wandy1208@gmail.com>
 
-ARG JYTHON_VERSION=2.7.1
-ARG JYTHON_HOME=/opt/jython-$JYTHON_VERSION 
+ENV ROOT_PASSWORD root
 
-LABEL Description="Jython $JYTHON_VERSION on Alpine + OpenJDK, minimal container"
+RUN apk add --update --no-cache \
+    python \
+    python-dev \
+    py-pip \
+    wget \
+    curl \
+    unzip 
 
-RUN set -euxo pipefail && \
-    apk add --no-cache bash
-RUN set -euxo pipefail && \
-    apk add --no-cache wget && \
-    wget -cO jython-installer.jar "http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$JYTHON_VERSION/jython-installer-$JYTHON_VERSION.jar" && \
-    java -jar jython-installer.jar -s -t standard -d "$JYTHON_HOME" && \
-    rm -fr "$JYTHON_HOME"/{Docs,Demo,tests} && \
-    rm -f jython-installer.jar && \
-    ln -sfv "$JYTHON_HOME/bin/"* /usr/local/bin/ && \
-    apk del wget
+##Robot env
+RUN pip install -U \
+    pip \
+    robotframework==3.0.2 \
+    robotframework-SikuliLibrary \
+    python --version
 
-#CMD ["jython"] 
-ENTRYPOINT ["jython"]
+
+
+#ssh-server
+RUN apk --update add openssh \
+        && sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \
+        && echo "root:${ROOT_PASSWORD}" | chpasswd \
+        && rm -rf /var/cache/apk/* /tmp/*
+
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+RUN java -jar /usr/local/lib/python2.7/dist-packages/SikuliLibrary/bin/SikuliLibrary.jar 18181
+
+EXPOSE 22
+EXPOSE 18181
+
+ENTRYPOINT ["entrypoint.sh"]
